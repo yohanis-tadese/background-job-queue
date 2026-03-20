@@ -1,0 +1,31 @@
+{
+  "name": "bullmq-1",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "node --loader ts-node/esm src/index.ts",
+    "worker": "node --loader ts-node/esm src/worker.ts",
+    "producer": "node --loader ts-node/esm src/bullmq/producer.ts",
+    "consumer": "node --loader ts-node/esm src/bullmq/consumer.ts",
+    "events": "node --loader ts-node/esm src/bullmq/events.ts",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:generate": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "bullmq": "^5.71.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "ioredis": "^5.10.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "prisma": "^6.0.0"
+  }
+}

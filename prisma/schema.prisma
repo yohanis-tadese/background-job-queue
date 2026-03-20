@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Tracks every job's full lifecycle — from queued to completed or dead.
+// Every state change (queued → processing → completed/failed) is recorded here.
+model JobRecord {
+  id           String    @id @default(uuid())
+
+  // BullMQ identifiers
+  jobId        String    @unique   // BullMQ's internal job ID
+  queueName    String              // e.g. 'email-queue'
+  jobName      String              // e.g. 'send-welcome-email'
+
+  // Lifecycle state
+  status       JobStatus @default(QUEUED)
+
+  // Payload and result
+  payload      Json                // data passed to the job (e.g. { to, subject })
+  result       Json?               // return value from processor on success
+  error        String?             // last error message on failure
+
+  // Retry tracking
+  attemptsMade Int       @default(0)
+
+  // Timestamps — each records when that phase started
+  createdAt    DateTime  @default(now())  // when the job was added to queue
+  updatedAt    DateTime  @updatedAt
+  startedAt    DateTime?                  // when a worker first picked it up
+  completedAt  DateTime?                  // when it finished successfully
+  failedAt     DateTime?                  // when the last attempt failed
+
+  // Indexes for common queries
+  @@index([queueName])   // "show all jobs in email-queue"
+  @@index([status])      // "show all failed jobs"
+  @@index([createdAt])   // "show recent jobs"
+  @@index([jobName])     // "show all send-welcome-email jobs"
+}
+
+enum JobStatus {
+  QUEUED      // added to queue, no worker has picked it up yet
+  PROCESSING  // worker is running the processor function right now
+  COMPLETED   // processor returned successfully
+  FAILED      // one or more attempts failed, may still retry
+  DEAD        // all retry attempts exhausted, job will never run again
+}
