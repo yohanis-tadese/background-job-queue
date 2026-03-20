@@ -2,9 +2,6 @@
 node_modules/
 
 # Environment variables — never push secrets to GitHub
-.env
-.env.local
-.env.production
 
 # TypeScript build output
 dist/
@@ -24,8 +21,12 @@ yarn-error.log*
 Thumbs.db
 
 # Editor
-.vscode/
 .idea/
 
 # Build cache
 .tsbuildinfo
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
+branch_structure.json
+config.bat
